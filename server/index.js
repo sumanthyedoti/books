@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 require('./db');
-// const { Books } = require('./models/books');
+const { Books } = require('./models/books');
 const { Users } = require('./models/users');
 
 const port = process.env.PORT || 3000;
@@ -19,6 +19,37 @@ const userName = 'y_sumanth';
 // }).catch((err) => {
 //   console.log(err);
 // });
+
+app.get('/books', (req, res) => {
+  Books.find().then((books) => {
+    res.json({
+      books,
+    });
+  }).catch((err) => {
+    res.status(400).send(err);
+  });
+});
+
+app.get('/books/:id', (req, res) => {
+  const isbn = req.params.id;
+  console.log(isbn);
+  const isIsbn = (/^\d+$/.test(isbn)) && (isbn.length === 13);
+  if (!isIsbn) {
+    res.status(400).send('Invalid Request: ID you sent is not ISBN');
+    return;
+  }
+  Books.find({ isbn }).then((book) => {
+    if (book.length === 0) {
+      res.send('0 results');
+      return;
+    }
+    res.json({
+      book,
+    });
+  }).catch((err) => {
+    res.status(400).send(err);
+  });
+});
 
 app.post('/list/want-to-read', (req, res) => {
   const isbn = req.body.wantToRead.trim();
@@ -38,7 +69,7 @@ app.post('/list/want-to-read', (req, res) => {
 app.get('/list/want-to-read', (req, res) => {
   Users.findOne({ userName }).then((books) => {
     res.json({
-      books: books.wantToRead,
+      wantToRead: books.wantToRead,
     });
   }).catch((err) => {
     res.status(400).send(err);
@@ -47,8 +78,10 @@ app.get('/list/want-to-read', (req, res) => {
 
 app.delete('/list/want-to-read/:id', (req, res) => {
   const isbn = req.params.id;
-  if (!isbn) {
-    res.status(400).send('Invalid Request');
+  console.log(isbn);
+  const isIsbn = (/^\d+$/.test(isbn)) && (isbn.length === 13);
+  if (!isIsbn) {
+    res.status(400).send('Invalid Request: ID you sent is not ISBN');
     return;
   }
   Users.updateOne({ userName }, { $pull: { wantToRead: isbn } }).then((book) => {
