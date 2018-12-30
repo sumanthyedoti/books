@@ -1,20 +1,9 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-require('./db');
-const { Users } = require('./models/users');
-const books = require('./routes/books');
-const users = require('./routes/users').router;
-const list = require('./routes/list');
+const { Users } = require('../models/users');
 
-const port = process.env.PORT || 3000;
-const app = express();
+const router = express.Router();
 
-app.use(bodyParser.json());
-app.use('/books', books);
-app.use('/user', users);
-app.use('/list', list);
-
-function getUserInfo(userName) {
+function getUser(userName) {
   return new Promise((resolve, reject) => {
     Users.findOne({ userName }).then((user) => {
       if (!user) {
@@ -27,7 +16,7 @@ function getUserInfo(userName) {
   });
 }
 
-app.post('/register', (req, res) => {
+router.post('/', (req, res) => {
   const { userName } = req.body;
   const { name } = req.body;
   const { email } = req.body;
@@ -52,10 +41,10 @@ app.post('/register', (req, res) => {
   });
 });
 
-app.get('/login/:userName', async (req, res) => {
+router.get('/:userName', async (req, res) => {
   const { userName } = req.params;
   try {
-    const user = await getUserInfo(userName);
+    const user = await getUser(userName);
     res.json(user);
   } catch (err) {
     res.status(404).json({
@@ -64,6 +53,7 @@ app.get('/login/:userName', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server connect at port ${port}`);
-});
+module.exports = {
+  router,
+  getUser,
+};

@@ -28,21 +28,21 @@ const UsersSchema = new Schema({
     type: [{
       type: String,
       trim: true,
-      require: true,
+      unique: true,
     }],
   },
   reading: {
     type: [{
       type: String,
       trim: true,
-      require: true,
+      unique: true,
     }],
   },
   read: {
     type: [{
       type: String,
       trim: true,
-      require: true,
+      unique: true,
     }],
   },
 });
