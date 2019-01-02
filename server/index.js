@@ -42,13 +42,15 @@ app.post('/register', (req, res) => {
     name,
     email,
   });
-  user.save().then((book) => {
+  user.save().then((user) => {
     res.json({
       message: 'User added',
     });
-    return book;
+    return user;
   }).catch((err) => {
-    res.status(400).send(err);
+    res.status(400).send({
+      errorMessage: 'Username/email is already taken!',
+    });
   });
 });
 

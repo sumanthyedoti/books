@@ -24,8 +24,27 @@ function getBook(isbn) {
       if (!book) {
         reject(new Error('The book does not exists!'));
       }
+      console.log(book);
       resolve(book);
     }).catch((err) => {
+      reject(new Error(err));
+    });
+  });
+}
+
+function checkBookInLsit(userName, list, isbn) {
+  return new Promise((resolve, reject) => {
+    const searchObject = {
+      userName,
+      [list]: isbn,
+    };
+    Users.find(searchObject).then((book) => {
+      if (book.length === 0) {
+        resolve(0);
+      }
+      resolve(book[0][list].filter(x => x === '9781449337711').length);
+    }).catch((err) => {
+      // console.log(err);
       reject(new Error(err));
     });
   });
@@ -48,6 +67,14 @@ router.post('/want-to-read', async (req, res) => {
   }
   try {
     const book = await getBook(isbn);
+    const dupNumber = await checkBookInLsit(userName, 'wantToRead', isbn);
+    if (dupNumber !== 0) {
+      res.status(400).send({
+        errorMessage: 'The book already exists in the list',
+      });
+      res.end();
+      return;
+    }
     Users.updateOne({ userName }, { $push: { wantToRead: isbn } })
       .then((data) => {
         if (data.nModified === 0) {
@@ -64,6 +91,7 @@ router.post('/want-to-read', async (req, res) => {
         res.status(400).send(err);
       });
   } catch (err) {
+    console.log(err);
     res.status(404).json({
       errorMessage: 'The book does not exists',
     });
@@ -92,7 +120,7 @@ router.delete('/want-to-read/:id', async (req, res) => {
     return;
   }
   Users.updateOne({ userName }, { $pull: { wantToRead: isbn } }).then((book) => {
-    console.log(book);
+    // console.log(book);
     if (book.nModified === 0) {
       return res.status(400).json({
         errorMessage: 'There is no such book in want-to-read list!',
@@ -125,6 +153,14 @@ router.post('/reading', async (req, res) => {
   }
   try {
     const book = await getBook(isbn);
+    const dupNumber = await checkBookInLsit(userName, 'reading', isbn);
+    if (dupNumber !== 0) {
+      res.status(400).send({
+        errorMessage: 'The book already exists in the list',
+      });
+      res.end();
+      return;
+    }
     Users.updateOne({ userName }, { $push: { reading: isbn } })
       .then((data) => {
         if (data.nModified === 0) {
@@ -199,6 +235,14 @@ router.post('/read', async (req, res) => {
   }
   try {
     const book = await getBook(isbn);
+    const dupNumber = await checkBookInLsit(userName, 'read', isbn);
+    if (dupNumber !== 0) {
+      res.status(400).send({
+        errorMessage: 'The book already exists in the list',
+      });
+      res.end();
+      return;
+    }
     Users.updateOne({ userName }, { $push: { read: isbn } })
       .then((data) => {
         if (data.nModified === 0) {
