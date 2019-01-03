@@ -3,7 +3,6 @@ const bodyParser = require('body-parser');
 require('./db');
 const { Users } = require('./models/users');
 const books = require('./routes/books');
-const users = require('./routes/users').router;
 const list = require('./routes/list');
 
 const port = process.env.PORT || 3000;
@@ -11,7 +10,6 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use('/books', books);
-app.use('/user', users);
 app.use('/list', list);
 
 function getUserInfo(userName) {
@@ -44,13 +42,12 @@ app.post('/register', (req, res) => {
   });
   user.save().then((user) => {
     res.json({
+      user,
       message: 'User added',
     });
     return user;
   }).catch((err) => {
-    res.status(400).send({
-      errorMessage: 'Username/email is already taken!',
-    });
+    res.status(500).send(err);
   });
 });
 
@@ -61,7 +58,7 @@ app.get('/login/:userName', async (req, res) => {
     res.json(user);
   } catch (err) {
     res.status(404).json({
-      errorMessage: 'No such User found!',
+      errorMessage: err.message,
     });
   }
 });

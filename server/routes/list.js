@@ -8,12 +8,14 @@ router.use((req, res, next) => {
   const { username } = req.headers;
   Users.findOne({ userName: username }).then((user) => {
     if (!user) {
-      res.status(401).send('User not found!');
+      res.status(401).send({
+        errorMessage: 'User not found!',
+      });
       res.end();
     }
     next();
   }).catch((err) => {
-    res.status(400).send(err);
+    res.status(500).send(err);
     res.end();
   });
 });
@@ -24,7 +26,6 @@ function getBook(isbn) {
       if (!book) {
         reject(new Error('The book does not exists!'));
       }
-      console.log(book);
       resolve(book);
     }).catch((err) => {
       reject(new Error(err));
@@ -42,9 +43,8 @@ function checkBookInLsit(userName, list, isbn) {
       if (book.length === 0) {
         resolve(0);
       }
-      resolve(book[0][list].filter(x => x === '9781449337711').length);
+      resolve(book[0][list].filter(x => x === isbn).length);
     }).catch((err) => {
-      // console.log(err);
       reject(new Error(err));
     });
   });
@@ -67,28 +67,29 @@ router.post('/want-to-read', async (req, res) => {
   }
   try {
     const book = await getBook(isbn);
-    const dupNumber = await checkBookInLsit(userName, 'wantToRead', isbn);
-    if (dupNumber !== 0) {
-      res.status(400).send({
-        errorMessage: 'The book already exists in the list',
-      });
+    try {
+      const dupNumber = await checkBookInLsit(userName, 'read', isbn);
+      if (dupNumber !== 0) {
+        res.status(400).send({
+          errorMessage: 'The book already exists in the list',
+        });
+        res.end();
+        return;
+      }
+    } catch (err) {
+      res.status(500).send(err);
       res.end();
       return;
     }
     Users.updateOne({ userName }, { $push: { wantToRead: isbn } })
       .then((data) => {
-        if (data.nModified === 0) {
-          res.status(400).json({
-            errorMessage: 'Book already exists in want-to-read list!',
-          });
-          return;
-        }
         res.json({
-          message: `'${isbn}' is added want-to-read list`,
+          book: isbn,
+          message: 'The book is added want-to-read list',
         });
       })
       .catch((err) => {
-        res.status(400).send(err);
+        res.status(500).send(err);
       });
   } catch (err) {
     console.log(err);
@@ -105,7 +106,7 @@ router.get('/want-to-read', async (req, res) => {
       wantToRead: books.wantToRead,
     });
   }).catch((err) => {
-    res.status(400).send(err);
+    res.status(500).send(err);
   });
 });
 
@@ -120,19 +121,18 @@ router.delete('/want-to-read/:id', async (req, res) => {
     return;
   }
   Users.updateOne({ userName }, { $pull: { wantToRead: isbn } }).then((book) => {
-    // console.log(book);
     if (book.nModified === 0) {
-      return res.status(400).json({
+      return res.status(404).json({
         errorMessage: 'There is no such book in want-to-read list!',
       });
     }
     res.json({
-      message: 'book deleted from want-to-read list',
+      book: isbn,
+      message: 'The book is deleted from want-to-read list',
     });
     return book;
   }).catch((err) => {
-    // console.log(err);
-    res.status(400).send(err);
+    res.status(500).send(err);
   });
 });
 
@@ -153,27 +153,28 @@ router.post('/reading', async (req, res) => {
   }
   try {
     const book = await getBook(isbn);
-    const dupNumber = await checkBookInLsit(userName, 'reading', isbn);
-    if (dupNumber !== 0) {
-      res.status(400).send({
-        errorMessage: 'The book already exists in the list',
-      });
+    try {
+      const dupNumber = await checkBookInLsit(userName, 'read', isbn);
+      if (dupNumber !== 0) {
+        res.status(400).send({
+          errorMessage: 'The book already exists in the list',
+        });
+        res.end();
+        return;
+      }
+    } catch (err) {
+      res.status(500).send(err);
       res.end();
       return;
     }
     Users.updateOne({ userName }, { $push: { reading: isbn } })
       .then((data) => {
-        if (data.nModified === 0) {
-          res.status(400).json({
-            errorMessage: 'Book already exists in reading list!',
-          });
-          return;
-        }
         res.json({
-          message: `'${isbn}' is added reading list`,
+          book: isbn,
+          message: 'The book is added reading list',
         });
       }).catch((err) => {
-        res.status(400).send(err);
+        res.status(500).send(err);
       });
   } catch (err) {
     res.status(404).json({
@@ -189,7 +190,7 @@ router.get('/reading', async (req, res) => {
       reading: books.reading,
     });
   }).catch((err) => {
-    res.status(400).send(err);
+    res.status(500).send(err);
   });
 });
 
@@ -205,16 +206,17 @@ router.delete('/reading/:id', async (req, res) => {
   }
   Users.updateOne({ userName }, { $pull: { reading: isbn } }).then((book) => {
     if (book.nModified === 0) {
-      return res.status(400).json({
+      return res.status(404).json({
         errorMessage: 'There is no such book in reading list!',
       });
     }
     res.json({
-      message: 'book deleted from reading list',
+      book: isbn,
+      message: 'The book is deleted from reading list',
     });
     return book;
   }).catch((err) => {
-    res.status(400).send(err);
+    res.status(500).send(err);
   });
 });
 
@@ -235,27 +237,28 @@ router.post('/read', async (req, res) => {
   }
   try {
     const book = await getBook(isbn);
-    const dupNumber = await checkBookInLsit(userName, 'read', isbn);
-    if (dupNumber !== 0) {
-      res.status(400).send({
-        errorMessage: 'The book already exists in the list',
-      });
+    try {
+      const dupNumber = await checkBookInLsit(userName, 'read', isbn);
+      if (dupNumber !== 0) {
+        res.status(400).send({
+          errorMessage: 'The book already exists in the list',
+        });
+        res.end();
+        return;
+      }
+    } catch (err) {
+      res.status(500).send(err);
       res.end();
       return;
     }
     Users.updateOne({ userName }, { $push: { read: isbn } })
       .then((data) => {
-        if (data.nModified === 0) {
-          res.status(400).json({
-            errorMessage: 'Book already exists in read list!',
-          });
-          return;
-        }
         res.json({
-          message: `'${isbn}' is added read list`,
+          book: isbn,
+          message: 'The book is added read list',
         });
       }).catch((err) => {
-        res.status(400).send(err);
+        res.status(500).send(err);
       });
   } catch (err) {
     res.status(404).json({
@@ -271,7 +274,7 @@ router.get('/read', async (req, res) => {
       read: books.read,
     });
   }).catch((err) => {
-    res.status(400).send(err);
+    res.status(500).send(err);
   });
 });
 
@@ -287,16 +290,17 @@ router.delete('/read/:id', async (req, res) => {
   }
   Users.updateOne({ userName }, { $pull: { read: isbn } }).then((book) => {
     if (book.nModified === 0) {
-      return res.status(400).json({
+      return res.status(404).json({
         errorMessage: 'There is no such book in read list!',
       });
     }
     res.json({
-      message: 'book deleted from read list',
+      book: isbn,
+      message: 'The book is deleted from read list',
     });
     return book;
   }).catch((err) => {
-    res.status(400).send(err);
+    res.status(500).send(err);
   });
 });
 

@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
       books,
     });
   }).catch((err) => {
-    res.status(400).send(err);
+    res.status(500).send(err);
   });
 });
 
@@ -22,27 +22,16 @@ router.get('/:id', (req, res) => {
   }
   Books.find({ isbn }).then((book) => {
     if (book.length === 0) {
-      res.send('0 results');
+      res.status(404).send({
+        errorMessage: '0 results',
+      });
       return;
     }
     res.json({
-      book,
+      book: book[0],
     });
   }).catch((err) => {
-    res.status(400).send(err);
-  });
-});
-
-router.get('/exists/:id', (req, res) => {
-  const isbn = req.params.id;
-  Books.findOne({ isbn }).then((book) => {
-    if (book) {
-      res.send(book);
-    }else{
-      res.send(404).send('Book dosnt exists!');
-    }
-  }).catch((err) => {
-    res.status(404).send(err);
+    res.status(500).send(err);
   });
 });
 
