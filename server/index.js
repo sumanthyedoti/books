@@ -1,13 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-require('./db');
+const db = require('./db');
 const { Users } = require('./models/users');
 const books = require('./routes/books');
 const list = require('./routes/list');
 
 const port = process.env.PORT || 3000;
 const app = express();
-
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,DELETE');
+  next();
+});
 app.use(bodyParser.json());
 app.use('/books', books);
 app.use('/list', list);
@@ -65,4 +69,5 @@ app.get('/login/:userName', async (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server connect at port ${port}`);
+  db.connectToDB();
 });
