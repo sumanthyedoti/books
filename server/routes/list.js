@@ -40,6 +40,7 @@ function checkBookInLsit(userName, list, isbn) {
       [list]: isbn,
     };
     Users.find(searchObject).then((book) => {
+      console.log(book.length);
       if (book.length === 0) {
         resolve(0);
       }
@@ -68,10 +69,13 @@ router.post('/want-to-read', async (req, res) => {
   try {
     const book = await getBook(isbn);
     try {
-      const dupNumber = await checkBookInLsit(userName, 'read', isbn);
+      let dupNumber = 0;
+      dupNumber += await checkBookInLsit(userName, 'wantToRead', isbn);
+      dupNumber += await checkBookInLsit(userName, 'reading', isbn);
+      dupNumber += await checkBookInLsit(userName, 'read', isbn);
       if (dupNumber !== 0) {
         res.status(400).send({
-          errorMessage: 'The book already exists in the list',
+          errorMessage: 'The book already exists in a list',
         });
         res.end();
         return;
@@ -154,10 +158,13 @@ router.post('/reading', async (req, res) => {
   try {
     const book = await getBook(isbn);
     try {
-      const dupNumber = await checkBookInLsit(userName, 'read', isbn);
+      let dupNumber = 0;
+      dupNumber += await checkBookInLsit(userName, 'wantToRead', isbn);
+      dupNumber += await checkBookInLsit(userName, 'reading', isbn);
+      dupNumber += await checkBookInLsit(userName, 'read', isbn);
       if (dupNumber !== 0) {
         res.status(400).send({
-          errorMessage: 'The book already exists in the list',
+          errorMessage: 'The book already exists in a list',
         });
         res.end();
         return;
@@ -238,10 +245,13 @@ router.post('/read', async (req, res) => {
   try {
     const book = await getBook(isbn);
     try {
-      const dupNumber = await checkBookInLsit(userName, 'read', isbn);
+      let dupNumber = 0;
+      dupNumber += await checkBookInLsit(userName, 'wantToRead', isbn);
+      dupNumber += await checkBookInLsit(userName, 'reading', isbn);
+      dupNumber += await checkBookInLsit(userName, 'read', isbn);
       if (dupNumber !== 0) {
         res.status(400).send({
-          errorMessage: 'The book already exists in the list',
+          errorMessage: 'The book already exists in a list',
         });
         res.end();
         return;

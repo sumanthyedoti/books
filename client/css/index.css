@@ -45,17 +45,17 @@ main{
 }
 body{
   position: fixed;
-    padding: 0;
-    margin: 0;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  padding: 0;
+  margin: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 .books-display{
   position: relative;
   z-index: 1;
-  width: 46%;
+  width: 42%;
   height: 100vh;
   /* background-color: rgb(156, 151, 132); */
   background: url('../images/books-bg.png');
@@ -67,8 +67,19 @@ body{
   display: flex;
   padding: 10px 10px 100px 10px;
 }
+.books-display::-webkit-scrollbar {
+  width: 6px;
+}
+.books-display::-webkit-scrollbar-track {
+  border-radius: 10px;
+}
+ .books-display::-webkit-scrollbar-thumb {
+  background: rgb(45, 119, 136);
+  border-radius: 10px;
+  margin-right: 2px;
+}
 .book-item{
-  min-width: 160px;
+  width: 160px;
   height: 220px;
   margin: 24px 10px;
   border-radius: 0 7px 7px 0;
@@ -99,14 +110,15 @@ body{
 .book-subtitle{
   position: absolute;
   display: table;
-  font-size: 12px;
+  font-size: 10px;
+  font-style: italic;
   background: rgba(248, 153, 28, 0.8);
   padding: 2px;
   top: 80px;
   width: 100%;
-  min-height: 40px;
+  min-height: 38px;
   vertical-align: middle;
-  font-weight: bold;
+  font-weight: 600;
   text-align: center;
   color: whitesmoke;
 }
@@ -116,8 +128,9 @@ body{
 }
 .book-author{
   position: absolute;
+  padding: 4px;
   display: table;
-  bottom: 50px;
+  bottom: 46px;
   left: 20%;
   text-align: center;
   width: 100px;
@@ -135,8 +148,8 @@ body{
   position: absolute;
   bottom: 4px;
   left: 4px;
-  font-size: 12px;
-  width: 80px;
+  font-size: 10px;
+  width: 66px;
   text-align: center;
   background-color: rgba(0, 0, 0, 0.8);
   padding: 0;
@@ -153,7 +166,7 @@ body{
   right: -6px;
   bottom: -6px;
   border: 2px groove rgb(99, 19, 19);
-  border-radius: 0px 7px 7px 0;
+  border-radius: 0px 7px 7px 6px;
 }
 .bookmark{
   width: 18px;
@@ -163,10 +176,280 @@ body{
   right: 16px;
   z-index: -1;
 }
+.bookmark-list{
+  width: 100px;
+  background-color: whitesmoke;
+  position: absolute;
+  text-align: center;
+  font-size: 14px;
+  color: rgb(83, 7, 7);
+  font-weight: 600;
+  display: none;
+  bottom: 0px;
+  right: 6px;
+  padding: 2px;
+  box-shadow: -2px -1px 6px 0px gray;
+}
+.bookmark-list-item{
+  background-color: skyblue;
+  padding: 2px;
+  margin: 4px 2px;
+  cursor: pointer;
+  transition-property: color, background-color;
+  transition-duration: 0.25s;
+  transition-timing-function: ease-in-out;
+}
+.bookmark-menu:hover{
+  background-color: rgb(38, 117, 148);
+  color: whitesmoke;
+}
 .home{
-  width: 54%;
+  width: 58%;
   height: 100vh;
   background-color: rgb(238, 235, 235);
-  background: url('../images/bg2.png');
+  overflow: auto;
+}
+
+.login-div, .reg-div{
+  color: rgb(71, 17, 17);
+  display: flex;
+  flex-direction: column;
+  padding: 40px;
+  min-width: 360;
+  text-align: center;
+  font-size: 18px;
+  width: 60%;
+  min-width: 200px;
+  min-height: 260px;
+  margin: 12% auto;
+  border: 8px groove rgb(165, 77, 42);
+  border-radius: 5px;
+  transition-property: height, min-height, transform;
+  transition-duration: 0.3s;
+  transition-timing-function: ease-in-out;
+}
+.reg-login-div{
+  background-color: whitesmoke;
+}
+.reg-div{
+  display: none;
+}
+.login-div label {
+  font-size: 24px;
+}
+.reg-div label{
+  font-size: 20px;
+  text-align: left;
+  margin-left: 10%;
+}
+.login-form, .reg-form{
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
+.reg-login-form input:not([type="submit"]){
+  width: 80%;
+  margin: 20px auto;
+  outline: none;
+  font-size: 20px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.0);
+  color: rgb(148, 68, 32);
+  border-bottom: 2px solid brown;
+}
+.reg-form input:not([type="submit"]){
+  margin: 4px auto 20px auto;
+  font-size: 18px;
+}
+.reg-login-form input[type="submit"]{
+  width: 100px;
+  height: 34px;
+  margin: auto;
+  background-color: #2f8999;
+  border-radius: 4px;
+  color: white;
+  padding: 6px;
+  font-size: 18px;
+
+}
+.reg-login-form input[type="submit"]:hover{
+  animation-name: submit-hover;
+  animation-duration: 1.4s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-out;
+  animation-delay: 0.2s;
+
+}
+  @keyframes submit-hover{
+    60%{
+      width: 112px;
+    }
+  }
+.reg-text{
+  margin: 40px auto 10px auto;
+}
+.reg-login-text-button{
+  font-weight: bold;
+  color: #2f8999;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 5px;
+  display: inline-block;
+  border: 2px solid rgba(0, 0, 0, 0);
+  transition: color, border, background-color 0.28s ease-in;
+  transition-delay: 200ms;
+}
+  .reg-login-text-button:hover{
+    color: rgb(110, 66, 16);
+    background-color: rgba(47, 137, 153, 0.2);
+    border: 2px solid #08373f;
+  }
+.book-shelf{
+  width: 100%;
+  height: 91vh;
+  background: url('../images/books-bg1.png');
   background-size: 50px;
+  display: none;
+}
+.books-section-div{
+  position: relative;
+  width: 96%;
+  margin: auto;
+  height: 220px;
+  z-index: 1;
+  overflow: hidden;
+}
+.books-section-name{
+  font-size: 24px;
+  margin: 0px 2px 4px 2px;
+  height: 20px;
+ text-align: center;
+  font-family: "Fira Code";
+  font-weight: bold;
+  color: rgb(156, 41, 41);
+}
+.shelf{
+  position: absolute;
+  z-index: -10;
+  bottom: 10px;
+  width: 98%;
+  left: 0.6%;
+  min-width: 400px;
+  margin-top: 400px;
+  border-bottom: 14px solid rgb(126, 94, 94);
+  height: 60px;
+  border-radius: 0 0 10px 10px;
+  background: url('../images/books-bg.png');
+  transform: perspective(800px) rotateX(70deg);
+  transform-origin: bottom;
+  box-shadow: 4px 20px 20px 0px rgb(170, 168, 168);
+}
+.books-section{
+  display: flex;
+  justify-content: flex-start;
+  margin: 2px 50px 2px 40px;
+  overflow: auto;
+  padding: 0 10px;
+}
+.section-book-item{
+  flex-shrink: 0;
+  width: 124px;
+  height: 166px;
+  margin: 24px 20px;
+  border-radius: 0 6px 6px 0;
+  border: 2px solid rgb(71, 13, 13);
+  border-left: 5px groove rgba(71, 13, 13, 0.6);
+  background-attachment: fixed;
+	background-repeat: no-repeat;
+  background-size: 170px 230px;
+  position: relative;
+  bottom: 12px;
+}
+.section-book-title{
+  position: absolute;
+  display: table;
+  top: 6px;
+  padding: 2px;
+  width: 100%;
+  min-height: 60px;
+  font-size: 13px;
+  text-align: center;
+  font-weight: bold;
+  color: yellow;
+  background: rgba(78, 179, 197, 0.8);
+}
+.section-book-title p{
+  display: table-cell;
+  vertical-align: middle;
+}
+.section-book-subtitle{
+  position: absolute;
+  display: table;
+  font-size: 8px;
+  background: rgba(248, 153, 28, 0.8);
+  padding: 1px 4px;
+  top: 66px;
+  width: 100%;
+  min-height: 28px;
+  vertical-align: middle;
+  font-weight: 600;
+  text-align: center;
+  font-style: italic;
+  color: whitesmoke;
+}
+.section-book-subtitle p{
+  display: table-cell;
+  vertical-align: middle;
+}
+.section-book-author{
+  position: absolute;
+  padding: 2px;
+  display: table;
+  bottom: 30px;
+  left: 16%;
+  text-align: center;
+  width: 80px;
+  font-size: 12px;
+  min-height: 30px;
+  border-radius: 2px;
+  font-weight: bold;
+  color: rgb(20,20,20);
+  background-color: rgba(224, 194, 0, 0.8);
+}
+.section-book-author p{
+  display: table-cell;
+  vertical-align: middle;
+}
+.section-book-publisher{
+  position: absolute;
+  bottom: 2px;
+  left: 2px;
+  font-size: 8px;
+  width: 50px;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 2px 0px;
+  font-weight: bold;
+  border-radius: 2px;
+  color: whitesmoke;
+}
+.section-book-graphic{
+  position: absolute;
+  width: 128px;
+  height: 166px;
+  background: whitesmoke;
+  z-index: -1;
+  right: -6px;
+  bottom: 2px;
+  border: 2px groove rgb(99, 19, 19);
+  border-radius: 8px 6px 6px 0;
+}
+.section-bookmark{
+  width: 14px;
+  height: 34px;
+  position: absolute;
+  bottom: -20px;
+  right: 14px;
+  z-index: -1;
 }

@@ -11,22 +11,66 @@
   <script src="./js/index.js"></script>
 </head>
 <body>
-  <div class="main-div"> 
-    <header>
-      <div class="header-img">
-        <img src="./images/header-logo.jpeg" alt="logo">
-      </div>
-      <p class="header-title">bookReads</p>
-    </header>
-    
-    <main>
-      <div class="books-display">
+  <header>
+    <div class="header-img">
+      <img src="./images/header-logo.jpeg" alt="logo">
+    </div>
+    <p class="header-title">bookReads</p>
+  </header>
+  
+  <main>
+    <div class="books-display">
 
-      </div>
-      <div class="home">
+    </div>
+    <div class="home">
+        <div class="login-div reg-login-div">
+          <form class="login-form reg-login-form" action="">
+            <label for="login-username">Username</label>
+            <input type="text" name="username" required autocomplete="off" id="login-username">
+            <input type="submit" value="Login">
+          </form>
+          <p class="reg-text">Not a member? <span class="reg-login-text-button reg-text-button">Register Here</span> </p>
+        </div>
+        <div class="reg-div reg-login-div">
+          <form class ="reg-form reg-login-form" action="">
+              <label for="reg-username">Username</label>
+              <input type="text" name="username" required autocomplete="off" id="reg-username">
+              <label for="reg-name">Name</label>
+              <input type="text" name="name" required autocomplete="off" id="reg-name">
+              <label for="reg-email">Email</label>
+              <input type="email" name="email" required autocomplete="off" id="reg-email">
+              <input type="submit" value="Register">
+              
+              <p class="reg-text">Already a member? <span class="reg-login-text-button login-text-button">Login..</span> </p>
+          </form>
+        </div>
 
-      </div>
-    </main>
-  </div>
+        <div class="book-shelf">
+          <div class="books-section-div">
+            <p class="books-section-name">Reading</p>
+            <div class="reading books-section">
+
+              </div>
+            <div class="shelf"></div>
+          </div>
+
+          <div class="books-section-div">
+              <p class="books-section-name">Want-to-read</p>
+              <div class="want-to-read books-section">
+              
+                </div> 
+              <div class="shelf"></div>
+          </div>
+
+          <div class="books-section-div">
+              <p class="books-section-name">read</p>   
+              <div class="read books-section">
+
+              </div>           
+              <div class="shelf"></div>
+          </div>
+        </div>
+    </div>
+  </main>
 </body>
 </html>
