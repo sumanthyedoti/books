@@ -8,7 +8,7 @@ router.use((req, res, next) => {
   const { username } = req.headers;
   Users.findOne({ userName: username }).then((user) => {
     if (!user) {
-      res.status(401).send({
+      res.status(404).send({
         errorMessage: 'User not found!',
       });
       res.end();

@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const db = require('./db');
 const { Users } = require('./models/users');
 const books = require('./routes/books');
@@ -7,12 +8,8 @@ const list = require('./routes/list');
 
 const port = process.env.PORT || 3000;
 const app = express();
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,DELETE');
-  next();
-});
 app.use(bodyParser.json());
+app.use(cors());
 app.use('/books', books);
 app.use('/list', list);
 

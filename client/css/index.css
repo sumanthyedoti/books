@@ -175,6 +175,7 @@ body{
   bottom: -28px;
   right: 16px;
   z-index: -1;
+  cursor: grab;
 }
 .bookmark-list{
   width: 100px;
@@ -231,7 +232,7 @@ body{
 .reg-login-div{
   background-color: whitesmoke;
 }
-.reg-div{
+.login-div, .reg-div{
   display: none;
 }
 .login-div label {
@@ -351,6 +352,8 @@ body{
   margin: 2px 50px 2px 40px;
   overflow: auto;
   padding: 0 10px;
+  position: relative;
+  z-index: -1;
 }
 .section-book-item{
   flex-shrink: 0;
@@ -452,4 +455,23 @@ body{
   bottom: -20px;
   right: 14px;
   z-index: -1;
+  cursor: grab;
+}
+.section-bookmark-list{
+  width: 60px;
+  height: 60px;
+  background: url('../images/remove.png');
+  background-size: 60px;
+  position: absolute;
+  cursor: pointer;
+  display: none;
+  bottom: 8px;
+  right: 8px;
+  transition-property: transform;
+  transition-duration: 0.25s;
+  transition-timing-function: ease-in-out;
+}
+.section-bookmark-list:hover{
+  transform: scale(1.14);
+  color: whitesmoke;
 }
