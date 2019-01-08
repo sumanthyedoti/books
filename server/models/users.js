@@ -14,7 +14,7 @@ const UsersSchema = new Schema({
       validator(username) {
         return /^[a-z][a-z0-9_]+$/.test(username);
       },
-      message: 'Username is not valid. Should start with an alphabet. Use only a-z, _, 0-9!',
+      message: 'Username is not valid. <br> -> Should start with an alphabet. <br> -> Use only a-z, _, 0-9!',
     },
   },
   name: {
@@ -26,7 +26,7 @@ const UsersSchema = new Schema({
       validator(name) {
         return /^[a-zA-Z][a-zA-Z\s]+$/.test(name);
       },
-      message: 'Name is not valid. Should not contain any special characters. Use only A-Z, a-z, [space]',
+      message: 'Name is not valid. <br> -> Should not contain any special characters. <br> -> Use only A-Z, a-z, [space]',
     },
   },
   email: {

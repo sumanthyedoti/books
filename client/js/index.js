@@ -8,9 +8,8 @@ $(document).ready(function () {
     .done(loadBooks)
     .fail(function (res) {
       console.log(res);
-      showError('Unable of get Books from server');
+      showMessage('Unable of get Books from server');
     });
-
   if(localStorage.getItem('username')){
     $(".login-div").hide();
     $(".book-shelf").delay(300).fadeIn(300);
@@ -21,7 +20,7 @@ $(document).ready(function () {
     .done(loginUser)
     .fail(function (response) {
       if (response.status == 404) {
-        showError("User not Found!");
+        showMessage("User not Found!");
       }
     });
   }else{
@@ -47,7 +46,7 @@ $(document).ready(function () {
       .done(loginUser)
       .fail(function (response) {
         if (response.status == 404) {
-          showError("User not Found!");
+          showMessage("User not Found!");
         }
       });
   });
@@ -71,26 +70,33 @@ $(document).ready(function () {
         $(".reg-div").fadeOut(200);
         $(".login-div").fadeIn(300);
         setTimeout(function(){
-          alert("You registered successfully. Please login!");
+          showMessage("You registered successfully. Please login!");
         },200);
       })
       .fail(function (response) {
+        if(response.responseJSON.errmsg){
+          if(response.responseJSON.errmsg.indexOf("userName")!=-1){
+            showMessage('The username is already taken! Try different username.');
+          }else if(response.responseJSON.errmsg.indexOf("email")!=-1){
+            showMessage('The email already exists!');
+          }
+        }
         let errors = response.responseJSON.errors
         if(errors.userName){
           if(errors.userName.message.indexOf("Path")!=-1){
             errors.userName.message = errors.userName.message.splice(5);
           }
-          showError(errors.userName.message);
+          showMessage(errors.userName.message);
         }else if (errors.email){
           if(errors.email.message.indexOf("Path")!=-1){
             errors.email.message = errors.email.message.splice(5);
           }
-          showError(errors.email.message);
+          showMessage(errors.email.message);
         }else if (errors.name){
           if(errors.name.message.indexOf("Path")!=-1){
             errors.name.message = errors.name.message.slice(5);
           }
-          showError(errors.name.message);
+          showMessage(errors.name.message);
         }
       });
   });
@@ -154,14 +160,18 @@ function searchBooks(searchText){
   let books = JSON.parse(localStorage.getItem('books'));
   var options = {
     shouldSort: true,
+    tokenize: true,
+    matchAllTokens: true,
     findAllMatches: true,
     threshold: 0.6,
     location: 0,
     distance: 100,
     maxPatternLength: 32,
-    minMatchCharLength: 4,
+    minMatchCharLength: 2,
     keys: [
       "title",
+      "author",
+      "publisher"
     ]
   };
   var fuse = new Fuse(books, options);
@@ -203,7 +213,7 @@ async function bookClickAction(e) {
       loadBooksInSection(bookObject, section);
     })
     .fail(function (res) {
-      showError(res.responseJSON.errorMessage);
+      showMessage(res.responseJSON.errorMessage);
     });
   $(this).parent().delay(150).slideUp(400);
 }
@@ -220,6 +230,8 @@ function randomNumber(range) {
 function loginUser(response) {
   $(".login-div").fadeOut(300);
   $(".book-shelf").delay(300).fadeIn(300);
+  $('.user-div-item').fadeIn();
+  $('.user-name').html(response.name);
   localStorage.setItem('username', response.userName);
   loadBooksInSection(response, 'wantToRead');
   loadBooksInSection(response, 'reading');
@@ -299,6 +311,18 @@ function getBookByISBN(isbn) {
   });
 }
 
-function showError(message) {
-  alert(message);
+function showMessage(message) {
+  $('.message-popup').fadeIn(240);
+  $('.message-popup-close').click(function(){
+    $('.message-popup').fadeOut(240);
+  });
+  $(document).keyup(function (e) {
+    if (e.keyCode === 27) {
+      $('.message-popup').fadeOut(240);
+    }
+  });
+  $('.message-popup-text').html(message);
+  setTimeout(function(){
+    $('.message-popup').fadeOut(240);
+  },6000);
 }
