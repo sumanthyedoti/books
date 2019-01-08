@@ -1,18 +1,32 @@
 let addedCovers = [];
+var prevSearchLength = 1;
 $(document).ready(function () {
-  $('.books-display').fadeIn(500);
-  // localStorage.clear();
-  $('.logout').click(function(){
-    localStorage.clear();
-    location.reload();
-    
-  })
   $.ajax({
       url: "http://localhost:3000/books",
       type: "GET",
     })
     .done(loadBooks)
-    .fail(function () {});
+    .fail(function (res) {
+      console.log(res);
+      showError('Unable of get Books from server');
+    });
+
+  if(localStorage.getItem('username')){
+    $(".login-div").hide();
+    $(".book-shelf").delay(300).fadeIn(300);
+    $.ajax({
+      url: `http://localhost:3000/login/${localStorage.getItem('username')}`,
+      type: "GET",
+    })
+    .done(loginUser)
+    .fail(function (response) {
+      if (response.status == 404) {
+        showError("User not Found!");
+      }
+    });
+  }else{
+    $(".login-div").fadeIn(300);
+  }
 
   $(".reg-text-button").click(function () {
     $(".login-div").fadeOut(300);
@@ -22,13 +36,6 @@ $(document).ready(function () {
     $(".reg-div").fadeOut(300);
     $(".login-div").delay(300).fadeIn();
   });
-
-  if(localStorage.getItem('username')){
-    $(".login-div").hide();
-    $(".book-shelf").delay(300).fadeIn(300);
-  }else{
-    $(".login-div").fadeIn(300);
-  }
 
   $(".login-form").submit(function (e) {
     e.preventDefault();
@@ -87,11 +94,33 @@ $(document).ready(function () {
         }
       });
   });
-  
+
+  $(".search-text").on('keyup', function (e) {
+    let searchedBooks = searchBooks($(".search-text").val());
+    if(searchedBooks.length != 0){
+      prevSearchLength = searchedBooks.length;
+      $('.book-item').hide();
+      loadBooks(searchedBooks)
+    }else if(prevSearchLength!=0){
+      prevSearchLength = searchedBooks.length;
+      $('.book-item').hide();
+      loadBooks(JSON.parse(localStorage.getItem('books')));
+    }
+  });
+
+  $('.logout').click(function(){
+    localStorage.clear();
+    location.reload();
+  })
+
 });
 
 function loadBooks(response, section) {
-  let books = response.books;
+  if(response.books){
+    localStorage.setItem('books', JSON.stringify(response.books));
+  }
+  let books = response.books || response;
+  console.log(books);
   $.each(books, (key, book) => {
     let bookDiv = $(`<div class='book-item' value='${book.isbn}'></div>`);
     $(".books-display").append(bookDiv);
@@ -112,7 +141,6 @@ function loadBooks(response, section) {
     bookmarkDiv.append(`<p class='bookmark-list-item none-book-click' data-value='${book.isbn}' data-section='none'>None</p>`);
     $(bookDiv).append(bookmarkDiv);
   });
-
   loadBookmarkOptions();
   $('.want-to-read-book-click').click(bookClickAction);
   $('.reading-book-click').click(bookClickAction);
@@ -120,6 +148,24 @@ function loadBooks(response, section) {
   $('.none-book-click').click(function () {
     $(this).parent().delay(150).slideUp(400);
   });
+}
+
+function searchBooks(searchText){
+  let books = JSON.parse(localStorage.getItem('books'));
+  var options = {
+    shouldSort: true,
+    findAllMatches: true,
+    threshold: 0.6,
+    location: 0,
+    distance: 100,
+    maxPatternLength: 32,
+    minMatchCharLength: 4,
+    keys: [
+      "title",
+    ]
+  };
+  var fuse = new Fuse(books, options);
+  return fuse.search(searchText);
 }
 
 function loadBookmarkOptions() {
@@ -163,12 +209,12 @@ async function bookClickAction(e) {
 }
 function randomNumber(range) {
   let rand = Math.ceil((Math.random() * range));
-  if (addedCovers.indexOf(rand) === -1) {
-    addedCovers.push(rand);
+  // if (addedCovers.indexOf(rand) === -1) {
+    // addedCovers.push(rand);
     return rand;
-  } else {
-    return randomNumber(range);
-  }
+  // } else {
+  //   return randomNumber(range);
+  // }
 }
 
 function loginUser(response) {
