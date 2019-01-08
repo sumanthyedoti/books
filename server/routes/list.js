@@ -40,7 +40,6 @@ function checkBookInLsit(userName, list, isbn) {
       [list]: isbn,
     };
     Users.find(searchObject).then((book) => {
-      console.log(book.length);
       if (book.length === 0) {
         resolve(0);
       }

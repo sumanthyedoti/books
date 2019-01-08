@@ -1,7 +1,12 @@
 let addedCovers = [];
 $(document).ready(function () {
-  localStorage.clear();
-
+  $('.books-display').fadeIn(500);
+  // localStorage.clear();
+  $('.logout').click(function(){
+    localStorage.clear();
+    location.reload();
+    
+  })
   $.ajax({
       url: "http://localhost:3000/books",
       type: "GET",
@@ -35,7 +40,50 @@ $(document).ready(function () {
       .done(loginUser)
       .fail(function (response) {
         if (response.status == 404) {
-          console.error("user not Found!");
+          showError("User not Found!");
+        }
+      });
+  });
+
+  $(".reg-form").submit(function (e) {
+    e.preventDefault();
+    let loginForm = $(".reg-form").serializeArray();
+    $.ajax({
+        url: `http://localhost:3000/register`,
+        type: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        data: JSON.stringify({
+          [loginForm[0].name]: `${loginForm[0].value}`,
+          [loginForm[1].name]: `${loginForm[1].value}`,
+          [loginForm[2].name]: `${loginForm[2].value}`
+        }),
+      })
+      .done(function(){
+        $(".reg-div").fadeOut(200);
+        $(".login-div").fadeIn(300);
+        setTimeout(function(){
+          alert("You registered successfully. Please login!");
+        },200);
+      })
+      .fail(function (response) {
+        let errors = response.responseJSON.errors
+        if(errors.userName){
+          if(errors.userName.message.indexOf("Path")!=-1){
+            errors.userName.message = errors.userName.message.splice(5);
+          }
+          showError(errors.userName.message);
+        }else if (errors.email){
+          if(errors.email.message.indexOf("Path")!=-1){
+            errors.email.message = errors.email.message.splice(5);
+          }
+          showError(errors.email.message);
+        }else if (errors.name){
+          if(errors.name.message.indexOf("Path")!=-1){
+            errors.name.message = errors.name.message.slice(5);
+          }
+          showError(errors.name.message);
         }
       });
   });
